@@ -1,0 +1,23 @@
+x-base: &defaults
+  hostname: ${HOST_NAME}
+  env_file:
+    - .env
+
+services:
+  linux:
+    <<: *defaults
+    privileged: true
+    cap_add:
+      - ALL
+    container_name: linux_x86_64
+    working_dir: /home/${USER_NAME}/rkfs
+    build:
+      context: ./linux_x86_64
+      dockerfile: Dockerfile
+      args:
+        USER_NAME: ${USER_NAME}
+        USER_PASS: ${USER_PASS}
+        ROOT_PASS: ${ROOT_PASS}
+    volumes:
+      - ../rkfs:/home/${USER_NAME}/rkfs
+

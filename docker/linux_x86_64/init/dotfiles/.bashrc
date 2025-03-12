@@ -1,0 +1,11 @@
+echo "*------------------------------------------------------------------*"
+echo "          Hostname:" "$(hostname)"
+echo "            Kernel:" "$(uname -r)"
+echo "      Distribution:" "$(lsb_release -d 2>/dev/null || cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'=' -f2- | tr -d '"')"
+echo "      Architecture:" "$(uname -m)"
+echo "            Memory:" "$(free -h | awk '/^Mem:/ {print $2}')"
+echo "        Disk Space:" "$(df -h / | awk 'NR==2 {print $2 " total, " $4 " free"}')"
+echo "        IP Address:" "$(hostname -I | tr -d ' ')"
+echo " Public IP Address:" "$(curl -s ifconfig.me 2>/dev/null || curl -s icanhazip.com)"
+echo "*------------------------------------------------------------------*"
+echo
