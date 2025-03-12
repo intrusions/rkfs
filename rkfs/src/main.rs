@@ -1,14 +1,30 @@
+// disable rust standard library
 #![no_std]
+// disables Rust runtime init,
 #![no_main]
 
-use core::panic::PanicInfo;
+// see https://docs.rust-embedded.org/embedonomicon/smallest-no-std.html
+#![feature(lang_items)]
 
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+// see https://docs.rust-embedded.org/embedonomicon/smallest-no-std.html
+#[lang = "eh_personality"]
+extern "C" fn eh_personality() {}
+
+use core::panic::PanicInfo;
+use core::sync::atomic;
+use core::sync::atomic::Ordering;
+
+#[no_mangle]
+/// The name **must be** `_start`, otherwise the compiler throws away all code as unused. 
+/// The name can be changed by passing a different entry symbol as linker argument.
+fn _start() -> ! {
     loop {}
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    loop {}
+#[inline(never)]
+#[panic_handler]
+fn panic(_info: &PanicInfo) -> ! {
+    loop {
+        atomic::compiler_fence(Ordering::SeqCst);
+    }
 }
