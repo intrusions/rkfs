@@ -20,3 +20,7 @@ sudo apt update -y              \
         cmake                   \
         libssl-dev              \
         qemu-system-i386        \
+        grub                    \
+        nasm                    \
+        xorriso                 \
+        grub-pc-bin             \
