@@ -8,7 +8,6 @@ KERNEL_PATH     := build/iso/boot/$(KERNEL_BIN)
 ISO_PATH        := $(KERNEL_NAME).iso
 
 CARGO           := cargo
-RUSTC           := rustc
 NASM            := nasm
 LD              := ld
 QEMU            := qemu-system-$(TARGET)
@@ -16,10 +15,9 @@ QEMU            := qemu-system-$(TARGET)
 ASM_SRCS        := src/boot/boot.asm
 ASM_OBJS        := $(ASM_SRCS:.asm=.o)
 
-CARGO_OBJS      := target/$(TARGET_TRIPLE)/release/librkfs.a
+CARGO_OBJS      := target/$(TARGET_TRIPLE)/release/lib$(KERNEL_NAME).a
 LD_FILE         := linker.ld
 
-RUSTC_FLAGS     := -- --emit=obj
 CARGO_FLAGS     := --release
 NASM_FLAGS      := -f elf32
 LD_FLAGS        := -m elf_$(TARGET) -T $(LD_FILE)
@@ -46,10 +44,10 @@ run:
 
 .PHONY: is-multiboot
 is-multiboot:
-	@if grub-file --is-x86-multiboot $(KERNEL_PATH); then	\
-		echo "Multiboot: YES"; 								\
-	else 													\
-		echo "Multiboot: NO";		 						\
+	@if grub-file --is-x86-multiboot $(KERNEL_PATH); then   \
+		echo "Multiboot: YES";                              \
+	else                                                    \
+		echo "Multiboot: NO";                               \
 	fi
 
 .PHONY: size

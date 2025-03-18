@@ -26,8 +26,8 @@ RUN chown -R "${USER_NAME}:${USER_NAME}" "/home"
 USER ${USER_NAME}
 WORKDIR /home/${USER_NAME}/rkfs
 
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
- 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
 RUN . "$HOME/.cargo/env"
 
 ENTRYPOINT [ "sh", "/home/.init.sh" ]

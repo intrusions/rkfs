@@ -1,5 +1,3 @@
-/* https://wiki.osdev.org/Bare_Bones */
-
 ENTRY(_start)
 
 SECTIONS
