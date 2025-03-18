@@ -20,7 +20,7 @@ CARGO_OBJS      := target/$(TARGET_TRIPLE)/release/deps/rkfs-*.o
 LD_FILE         := linker.ld
 
 RUSTC_FLAGS     := -- --emit=obj
-CARGO_FLAGS     := --release --target=$(TARGET_PATH)
+CARGO_FLAGS     := --release
 NASM_FLAGS      := -f elf32
 LD_FLAGS        := -m elf_$(TARGET) -T $(LD_FILE)
 
