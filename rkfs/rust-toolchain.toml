@@ -1,5 +1,3 @@
-# https://stackoverflow.com/questions/67902309/how-to-compile-rust-code-to-bare-metal-32-bit-x86-i686-code-what-compile-targ
-
 [toolchain]
-channel = "nightly-2021-05-10"
+channel = "nightly"
 components = [ "rust-src", "rust-std", "rustc", "cargo" ]
