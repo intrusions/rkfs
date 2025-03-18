@@ -16,7 +16,7 @@ QEMU            := qemu-system-$(TARGET)
 ASM_SRCS        := src/boot/boot.asm
 ASM_OBJS        := $(ASM_SRCS:.asm=.o)
 
-CARGO_OBJS      := target/$(TARGET_TRIPLE)/release/deps/rkfs-*.o
+CARGO_OBJS      := target/$(TARGET_TRIPLE)/release/librkfs.a
 LD_FILE         := linker.ld
 
 RUSTC_FLAGS     := -- --emit=obj
@@ -31,7 +31,7 @@ all: build-iso
 
 .PHONY: build-bin
 build-bin: $(ASM_SRCS) $(LD_FILE)
-	$(CARGO) $(RUSTC) $(CARGO_FLAGS) $(RUSTC_FLAGS)
+	$(CARGO) build $(CARGO_FLAGS)
 	$(NASM) $(NASM_FLAGS) -o $(ASM_OBJS) $(ASM_SRCS)
 	$(LD) $(LD_FLAGS) -o $(KERNEL_BIN) $(ASM_OBJS) $(CARGO_OBJS)
 	mv $(KERNEL_BIN) $(KERNEL_PATH)

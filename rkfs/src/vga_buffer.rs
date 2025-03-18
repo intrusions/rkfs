@@ -104,12 +104,12 @@ pub fn print_something() {
     writer.write_byte(b'H');
     writer.write_string("Ello ");
 
-    // write!(writer, "The numbers are {}, and {}", 42, 1.0/3.0).unwrap();
+    write!(writer, "The numbers are {}, and {}", 42, 1.0/3.0).unwrap();
 }
 
-// impl fmt::Write for Writer {
-//     fn write_str(&mut self, s: &str) -> fmt::Result {
-//         self.write_string(s);
-//         Ok(())
-//     }
-// }
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
