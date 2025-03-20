@@ -5,13 +5,15 @@ mod vga_buffer;
 use core::panic::PanicInfo;
 
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
 
 #[no_mangle]
 pub extern "C" fn kmain() -> ! {
-    vga_buffer::print_something();    
-
+    println!("Hello from {}", "rkfs");
+    panic!("panic message");
+    
     loop {}
 }
