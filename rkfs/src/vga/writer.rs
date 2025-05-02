@@ -62,7 +62,7 @@ impl Writer {
         self.color_code = color_code;
     }
 
-    pub fn write_str_force(&mut self, s: &str) {
+    pub fn write_str_f(&mut self, s: &str) {
         for byte in s.bytes() {
             self.write_byte(byte);
         }
@@ -71,7 +71,7 @@ impl Writer {
 
 impl Write for Writer {
     fn write_str(&mut self, s: &str) -> Result {
-        self.write_str_force(s);
+        self.write_str_f(s);
         Ok(())
     }
 }
