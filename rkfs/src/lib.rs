@@ -25,7 +25,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn kmain() -> ! {
-    println!("Hello from {}", "rkfs");
+    println!("{}", "42");
 
     {
         WRITER
@@ -33,12 +33,7 @@ pub extern "C" fn kmain() -> ! {
             .set_color(ColorCode::new(Color::Green, Color::Black));
     }
 
-    println!("this is so {}!!", "green");
-
-    {
-        let mut writer = WRITER.lock();
-        writer.set_color(ColorCode::new(Color::White, Color::Black));
-    }
+    println!("42 in green");
 
     loop {}
 }
