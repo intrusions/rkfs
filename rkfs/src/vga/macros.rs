@@ -1,7 +1,9 @@
 #[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => {
-        let _ = $crate::vga::writer::WRITER.lock().write_fmt(format_args!($($arg)*));
+        let _ = $crate::vga::writer::WRITER
+            .lock()
+            .write_fmt(format_args!($($arg)*));
     };
 }
 

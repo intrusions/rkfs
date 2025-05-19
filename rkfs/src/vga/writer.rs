@@ -2,9 +2,9 @@ use core::fmt::{Result, Write};
 use lazy_static::lazy_static;
 use spin::Mutex;
 
-use super::buffer::{Buffer, BUFFER_HEIGHT, BUFFER_WIDTH};
+use super::buffer::{Buffer, ScreenChar, BUFFER_HEIGHT, BUFFER_WIDTH};
 use super::color::{Color, ColorCode};
-use super::screen_char::ScreenChar;
+// use super::screen_char::ScreenChar;
 
 pub struct Writer {
     col: usize,
