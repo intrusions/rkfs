@@ -1,4 +1,3 @@
-// use super::screen_char::ScreenChar;
 use volatile::Volatile;
 
 pub const BUFFER_HEIGHT: usize = 25;

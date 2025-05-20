@@ -4,7 +4,6 @@ use spin::Mutex;
 
 use super::buffer::{Buffer, ScreenChar, BUFFER_HEIGHT, BUFFER_WIDTH};
 use super::color::{Color, ColorCode};
-// use super::screen_char::ScreenChar;
 
 pub struct Writer {
     col: usize,

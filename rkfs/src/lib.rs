@@ -5,7 +5,6 @@ mod vga;
 
 use core::fmt::Write;
 use core::panic::PanicInfo;
-
 use vga::{
     color::{Color, ColorCode},
     writer::WRITER,
@@ -33,7 +32,7 @@ pub extern "C" fn kmain() -> ! {
             .set_color(ColorCode::new(Color::Green, Color::Black));
     }
 
-    println!("42 in green");
+    println!("{} in green", "42");
 
     loop {}
 }

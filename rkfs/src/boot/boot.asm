@@ -1,5 +1,3 @@
-; https://wiki.osdev.org/Bare_Bones
-
 MBALIGN  equ  1 << 0
 MEMINFO  equ  1 << 1
 MBFLAGS  equ  MBALIGN | MEMINFO
