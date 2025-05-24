@@ -2,9 +2,11 @@
 #![no_main]
 
 mod vga;
+mod gdt;
 
 use core::fmt::Write;
 use core::panic::PanicInfo;
+use gdt::GlobalDescriptorTable;
 use vga::{
     color::{Color, ColorCode},
     writer::WRITER,
@@ -22,17 +24,17 @@ fn panic(info: &PanicInfo) -> ! {
     loop {}
 }
 
+
 #[no_mangle]
 pub extern "C" fn kmain() -> ! {
-    println!("{}", "42");
+    println!("Welcome to {}!", "rkfs");
 
-    {
-        WRITER
-            .lock()
-            .set_color(ColorCode::new(Color::Green, Color::Black));
-    }
+    let _gdt = GlobalDescriptorTable::new();
 
-    println!("{} in green", "42");
+    let kernel_code_bits: u64 = unsafe {
+        core::mem::transmute(_gdt.kernel_code)
+    };
+    println!("{:064b}", kernel_code_bits);
 
     loop {}
 }
