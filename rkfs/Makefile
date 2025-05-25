@@ -11,6 +11,7 @@ CARGO           := cargo
 NASM            := nasm
 LD              := ld
 QEMU            := qemu-system-$(TARGET)
+GDB            := gdb
 
 ASM_SRCS        := src/boot/boot.asm
 ASM_OBJS        := $(ASM_SRCS:.asm=.o)
@@ -41,6 +42,17 @@ build-iso: build-bin
 .PHONY: run
 run:
 	$(QEMU) -cdrom $(ISO_PATH) -boot menu=on
+
+.PHONY: debug-host
+debug-host:
+	$(QEMU) --kernel $(KERNEL_PATH)                             \
+	-S -$(GDB) tcp::1234                                        \
+	-serial stdio
+
+.PHONY: debug-target
+debug-target:
+	@echo "Type 'target remote host.docker.internal:1234' in GDB"
+	$(GDB) $(KERNEL_PATH)
 
 .PHONY: is-multiboot
 is-multiboot:

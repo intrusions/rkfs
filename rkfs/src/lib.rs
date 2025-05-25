@@ -60,14 +60,9 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn kmain() -> ! {
-    println!("Welcome to {}!", "rkfs");
 
     let gdt = GlobalDescriptorTable::new();
     unsafe { gdt.load_gdt(); }
-
-    {
-        print_segments();
-    }
 
     loop {}
 }

@@ -10,9 +10,11 @@ bench = false
 
 [profile.dev]
 panic = "abort"
+debug = true
 
 [profile.release]
 panic = "abort"
+debug = true
 
 [dependencies]
 volatile = "0.2.6"
