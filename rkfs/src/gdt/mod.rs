@@ -1,12 +1,12 @@
+use core::arch::asm;
+
 #[allow(dead_code)]
 pub enum SegmentList {
-    // Null,
+    Null,
     KernelCode,
-    // KernelData,
-    // KernelStack,
-    // UserCode,
-    // UserData,
-    // UserStack,
+    KernelData,
+    UserCode,
+    UserData,
 }
 
 #[allow(dead_code)]
@@ -24,6 +24,7 @@ pub enum DescriptorType {
 }
 
 #[allow(dead_code)]
+#[repr(u8)]
 pub enum LongMode {
     Disabled = 0,
     Enabled = 1,
@@ -61,6 +62,7 @@ pub enum DescriptorPrivilegeLevel {
 }
 
 #[allow(dead_code)]
+#[repr(u8)]
 pub enum SegmentPresent {
     NotPresent = 0,
     Present = 1,
@@ -82,7 +84,7 @@ pub enum AvailableBit {
 
 #[repr(C, packed)]
 pub struct SegmentDescriptor {
-    pub limit_low: u16,
+    limit_low: u16,
     base_low: u16,
     base_mid: u8,
     access: u8,
@@ -93,12 +95,22 @@ pub struct SegmentDescriptor {
 impl SegmentDescriptor {
     pub fn new(segment_type: SegmentList) -> Self {
         match segment_type {
+            SegmentList::Null => Self::create_null_segment(),
             SegmentList::KernelCode => Self::create_kernel_code_segment(),
-            // SegmentList::KernelData => Self::create_kernel_data_segment(),
-            // SegmentList::KernelStack => Self::create_kernel_stack_segment(),
-            // SegmentList::UserCode => Self::create_user_code_segment(),
-            // SegmentList::UserData => Self::create_user_data_segment(),
-            // SegmentList::UserStack => Self::create_user_stack_segment(),
+            SegmentList::KernelData => Self::create_kernel_data_segment(),
+            SegmentList::UserCode => Self::create_user_code_segment(),
+            SegmentList::UserData => Self::create_user_data_segment(),
+        }
+    }
+
+    fn create_null_segment() -> SegmentDescriptor {
+        SegmentDescriptor {
+            limit_low: 0,
+            base_low: 0,
+            base_mid: 0,
+            access: 0,
+            granularity: 0,
+            base_high: 0,
         }
     }
 
@@ -106,14 +118,12 @@ impl SegmentDescriptor {
         let base: u32 = 0x00000000;
         let limit: u32 = 0x000FFFFF;
 
-        let access: u8 = 
-            (SegmentPresent::Present as u8) << 7
+        let access: u8 = (SegmentPresent::Present as u8) << 7
             | ((DescriptorPrivilegeLevel::Ring0 as u8) << 5)
             | ((DescriptorType::CodeOrData as u8) << 4)
             | (SegmentType::CodeExecuteRead as u8);
 
-        let granularity: u8 = 
-            (Granularity::Byte as u8) << 7
+        let granularity: u8 = (Granularity::Byte as u8) << 7
             | ((DefaultOperationSize::Bit32 as u8) << 6)
             | ((LongMode::Disabled as u8) << 5)
             | ((AvailableBit::NotAvailable as u8) << 4)
@@ -129,59 +139,140 @@ impl SegmentDescriptor {
         }
     }
 
+    fn create_kernel_data_segment() -> SegmentDescriptor {
+        let base: u32 = 0x00000000;
+        let limit: u32 = 0x000FFFFF;
 
-    // fn create_kernel_data_segment() -> Result<SegmentDescriptor, Error> {
-    //     SegmentDescriptor {
+        let access: u8 = (SegmentPresent::Present as u8) << 7
+            | ((DescriptorPrivilegeLevel::Ring0 as u8) << 5)
+            | ((DescriptorType::CodeOrData as u8) << 4)
+            | (SegmentType::DataReadWrite as u8);
 
-    //     }
-    // }
+        let granularity: u8 = (Granularity::Byte as u8) << 7
+            | ((DefaultOperationSize::Bit32 as u8) << 6)
+            | ((LongMode::Disabled as u8) << 5)
+            | ((AvailableBit::NotAvailable as u8) << 4)
+            | ((limit >> 16) & 0x0F) as u8;
 
-    // fn create_kernel_stack_segment() -> Result<SegmentDescriptor, Error> {
-    //     SegmentDescriptor {
+        SegmentDescriptor {
+            limit_low: (limit & 0xFFFF) as u16,
+            base_low: (base & 0xFFFF) as u16,
+            base_mid: ((base >> 16) & 0xFF) as u8,
+            access,
+            granularity,
+            base_high: ((base >> 24) & 0xFF) as u8,
+        }
+    }
 
-    //     }
-    // }
+    fn create_user_code_segment() -> SegmentDescriptor {
+        let base: u32 = 0x00000000;
+        let limit: u32 = 0x000FFFFF;
 
-    // fn create_user_code_segment() -> Result<SegmentDescriptor, Error> {
-    //     SegmentDescriptor {
+        let access: u8 = (SegmentPresent::Present as u8) << 7
+            | ((DescriptorPrivilegeLevel::Ring3 as u8) << 5)
+            | ((DescriptorType::CodeOrData as u8) << 4)
+            | (SegmentType::CodeExecuteRead as u8);
 
-    //     }
-    // }
+        let granularity: u8 = (Granularity::Byte as u8) << 7
+            | ((DefaultOperationSize::Bit32 as u8) << 6)
+            | ((LongMode::Disabled as u8) << 5)
+            | ((AvailableBit::NotAvailable as u8) << 4)
+            | ((limit >> 16) & 0x0F) as u8;
 
-    // fn create_user_data_segment() -> Result<SegmentDescriptor, Error> {
-    //     SegmentDescriptor {
+        SegmentDescriptor {
+            limit_low: (limit & 0xFFFF) as u16,
+            base_low: (base & 0xFFFF) as u16,
+            base_mid: ((base >> 16) & 0xFF) as u8,
+            access,
+            granularity,
+            base_high: ((base >> 24) & 0xFF) as u8,
+        }
+    }
 
-    //     }
-    // }
+    fn create_user_data_segment() -> SegmentDescriptor {
+        let base: u32 = 0x00000000;
+        let limit: u32 = 0x000FFFFF;
 
-    // fn create_user_stack_segment() -> Result<SegmentDescriptor, Error> {
-    //     SegmentDescriptor {
+        let access: u8 = (SegmentPresent::Present as u8) << 7
+            | ((DescriptorPrivilegeLevel::Ring3 as u8) << 5)
+            | ((DescriptorType::CodeOrData as u8) << 4)
+            | (SegmentType::DataReadWrite as u8);
 
-    //     }
-    // }
+        let granularity: u8 = (Granularity::Byte as u8) << 7
+            | ((DefaultOperationSize::Bit32 as u8) << 6)
+            | ((LongMode::Disabled as u8) << 5)
+            | ((AvailableBit::NotAvailable as u8) << 4)
+            | ((limit >> 16) & 0x0F) as u8;
+
+        SegmentDescriptor {
+            limit_low: (limit & 0xFFFF) as u16,
+            base_low: (base & 0xFFFF) as u16,
+            base_mid: ((base >> 16) & 0xFF) as u8,
+            access,
+            granularity,
+            base_high: ((base >> 24) & 0xFF) as u8,
+        }
+    }
 }
 
-#[allow(dead_code)]
+#[repr(C, packed)]
 pub struct GlobalDescriptorTable {
-    // null: SegmentDescriptor,
-    pub kernel_code: SegmentDescriptor,
-    // kernel_data: SegmentDescriptor,
-    // kernel_stack: SegmentDescriptor,
-    // user_code: SegmentDescriptor,
-    // user_data: SegmentDescriptor,
-    // user_stack: SegmentDescriptor,
+    entry: [SegmentDescriptor; 5],
 }
 
 impl GlobalDescriptorTable {
     pub fn new() -> Self {
-        Self {
-            // null: SegmentDescriptor::new(SegmentList::Null),
-            kernel_code: SegmentDescriptor::new(SegmentList::KernelCode),
-            // kernel_data: SegmentDescriptor::new(SegmentList::KernelData),
-            // kernel_stack: SegmentDescriptor::new(SegmentList::KernelStack),
-            // user_code: SegmentDescriptor::new(SegmentList::UserCode),
-            // user_data: SegmentDescriptor::new(SegmentList::UserData),
-            // user_stack: SegmentDescriptor::new(SegmentList::UserStack),
+        GlobalDescriptorTable {
+            entry: [
+                SegmentDescriptor::new(SegmentList::Null),
+                SegmentDescriptor::new(SegmentList::KernelCode),
+                SegmentDescriptor::new(SegmentList::KernelData),
+                SegmentDescriptor::new(SegmentList::UserCode),
+                SegmentDescriptor::new(SegmentList::UserData),
+            ],
         }
     }
+
+    pub unsafe fn load_gdt(&self) {
+        let gdtr = self.get_gdtr();
+
+        asm!(
+            "lgdt [{0}]",
+            in(reg) &gdtr,
+            options(nostack, preserves_flags),
+        );
+
+        const KERNEL_CODE_SELECTOR: u16 = 0x08;
+        const KERNEL_DATA_SELECTOR: u16 = 0x10;
+
+        asm!(
+            "push {code_sel}",
+            "lea eax, [2f]",
+            "push eax",
+            "retf", 
+            "2:",
+            "mov ds, {data_sel:x}",
+            "mov es, {data_sel:x}",
+            "mov fs, {data_sel:x}",
+            "mov gs, {data_sel:x}",
+            "mov ss, {data_sel:x}",
+            code_sel = const KERNEL_CODE_SELECTOR,
+            data_sel = in(reg) KERNEL_DATA_SELECTOR,
+            out("eax") _,
+            options(nostack),
+        );
+    }
+
+    fn get_gdtr(&self) -> GlobalDescriptorTableRegister {
+        GlobalDescriptorTableRegister {
+            limit: (core::mem::size_of::<[SegmentDescriptor; 5]>() - 1) as u16,
+            base: self.entry.as_ptr() as u32,
+        }
+    }
+}
+
+#[repr(C, packed)]
+struct GlobalDescriptorTableRegister {
+    limit: u16,
+    base: u32,
 }
