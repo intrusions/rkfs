@@ -11,7 +11,7 @@ CARGO           := cargo
 NASM            := nasm
 LD              := ld
 QEMU            := qemu-system-$(TARGET)
-GDB            := gdb
+GDB             := gdb
 
 ASM_SRCS        := src/boot/boot.asm
 ASM_OBJS        := $(ASM_SRCS:.asm=.o)
@@ -51,8 +51,10 @@ debug-host:
 
 .PHONY: debug-target
 debug-target:
-	@echo "Type 'target remote host.docker.internal:1234' in GDB"
-	$(GDB) $(KERNEL_PATH)
+	$(GDB) $(KERNEL_PATH)                                       \
+		-ex "target remote host.docker.internal:1234"           \
+		-ex "break rkfs::kmain"                                 \
+		-ex "continue"
 
 .PHONY: is-multiboot
 is-multiboot:

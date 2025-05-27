@@ -2,8 +2,16 @@ ENTRY(_start)
 
 SECTIONS
 {
-	. = 1M;
+	. = 0x00000800;
+	.gdt :
+	{
+		KEEP
+		(
+			*(.gdt)
+		)
+	}
 
+	. = 1M;
 	.text :
 	{
 		*(.multiboot)
