@@ -5,6 +5,9 @@ MAGIC    equ  0x1BADB002
 CHECKSUM equ -(MAGIC + MBFLAGS)
 
 global _start
+global stack_bottom
+global stack_top
+
 extern kmain
 
 section .multiboot
