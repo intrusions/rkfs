@@ -5,9 +5,11 @@ mod debug;
 mod gdt;
 mod vga;
 
-use core::fmt::Write;
-use core::panic::PanicInfo;
-use debug::stack::{dump_stack_info};
+use core::{
+    fmt::Write,
+    panic::PanicInfo
+};
+use debug::stack::dump_stack_info;
 use gdt::global_descriptor_table::GDT;
 use vga::{
     color::{Color, ColorCode},
@@ -30,9 +32,9 @@ fn panic(info: &PanicInfo) -> ! {
 pub unsafe extern "C" fn kmain() -> ! {
     println!("welcome to {}!", "rkfs-2");
 
-    unsafe { GDT.load();}
+    GDT.load();
     println!("GDT loaded");
 
-    unsafe { dump_stack_info(); };
+    dump_stack_info();
     loop {}
 }

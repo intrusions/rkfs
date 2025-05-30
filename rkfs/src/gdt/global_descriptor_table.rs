@@ -17,16 +17,16 @@ pub static GDT: GlobalDescriptorTable = GlobalDescriptorTable {
     ],
 };
 
-pub const GDTR: GlobalDescriptorTableRegister = GlobalDescriptorTableRegister {
-    limit: (ENTRY_COUNT * 8 - 1) as u16,
-    base: 0x00000800,
-};
-
 #[repr(C, packed)]
 pub struct GlobalDescriptorTableRegister {
     pub limit: u16,
     pub base: u32,
 }
+
+pub const GDTR: GlobalDescriptorTableRegister = GlobalDescriptorTableRegister {
+    limit: (ENTRY_COUNT * 8 - 1) as u16,
+    base: 0x00000800,
+};
 
 #[repr(C, packed)]
 pub struct GlobalDescriptorTable {
